@@ -1,0 +1,41 @@
+body {
+    font-family: 'Oswald', sans-serif;
+    font-size: 48px;
+  }
+      
+  span {
+    color: #00B16A;
+  }
+
+  #board {
+    border-collapse: separate;
+    border-spacing: 2px;
+  }
+
+  #main {
+    border-collapse: separate;
+    border-spacing: 2px;
+  }
+
+  td {
+    vertical-align: middle;
+  }
+
+  .square {
+    width: 5vw;
+    height: 5vw;
+    background: #6C7A89;
+    cursor: pointer;
+    font-size: 5vw;
+    line-height: 5vw;
+    text-align: center;
+    color: white;
+  }
+
+  .square:hover {
+      opacity: .8;
+  }
+
+  .square:active {
+      background: #00B16A;
+  }
