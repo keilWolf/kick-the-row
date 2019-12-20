@@ -9,7 +9,12 @@
 - [ ] layout
 - [ ] hints (badge display how many moves are currently possible)
 - [ ] helping lines to better see which are the numbers to compare
-- [ ] intro page
-- [ ] impressum
+- [ ] intro page (how to play the game)
+- [ ] impressum/contact
 - [ ] bug: if too much lines, not completely scrollable
 - [ ] if row complete -> fade out slowly
+- [ ] highscore (1, 2, 3)
+- [ ] undo
+- [ ] counter of open elements
+- [ ] license
+
