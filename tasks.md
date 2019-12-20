@@ -12,3 +12,4 @@
 - [ ] intro page
 - [ ] impressum
 - [ ] bug: if too much lines, not completely scrollable
+- [ ] if row complete -> fade out slowly
