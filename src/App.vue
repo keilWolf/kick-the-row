@@ -1,5 +1,8 @@
 <template>
-  <div id="app">
+  <div id="app" class="center">
+    <div class='titleBlock'>
+      <h1>kick<span>the</span>row</h1>
+    </div>
     <table id='board'>
         <tr v-for="(row, idY) in board" :key="idY">
           <td v-for='(box, idX) in row' :key="idX">
@@ -183,9 +186,16 @@ export default {
 </script>
 
 <style>
+  .center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+  }
+
   body {
     font-family: 'Oswald', sans-serif;
     font-size: 48px;
+    background: #6C7A89;
   }
       
   span {
@@ -197,11 +207,6 @@ export default {
     border-spacing: 2px;
   }
 
-  #main {
-    border-collapse: separate;
-    border-spacing: 2px;
-  }
-
   td {
     vertical-align: middle;
   }
@@ -209,12 +214,13 @@ export default {
   .square {
     width: 5vw;
     height: 5vw;
-    background: #6C7A89;
+    background: rgb(76, 104, 131);
     cursor: pointer;
-    font-size: 5vw;
+    font-size: 4vw;
     line-height: 5vw;
     text-align: center;
     color: white;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   }
 
   .square:hover {
@@ -232,4 +238,17 @@ export default {
   .eliminated {
       background: #000000;
   }
+
+  .titleBlock {
+    color: white;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+  }
+
+  .titleBlock.h1 {
+      font-size: 100px;
+      width: 100%;
+  }
+
 </style>

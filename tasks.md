@@ -7,3 +7,8 @@
 - [ ] save
 - [ ] load
 - [ ] layout
+- [ ] hints (badge display how many moves are currently possible)
+- [ ] helping lines to better see which are the numbers to compare
+- [ ] intro page
+- [ ] impressum
+- [ ] bug: if too much lines, not completely scrollable
