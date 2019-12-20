@@ -3,27 +3,65 @@
     <div class='titleBlock'>
       <h1>kick<span>the</span>row</h1>
     </div>
-    <table id='board'>
+    <div class='playground'>
+    <table id='board' align="center">
         <tr v-for="(row, idY) in board" :key="idY">
           <td v-for='(box, idX) in row' :key="idX">
-            <div class='square' @click="router(idX, idY, box)" :class='{"square selected ": box.bg == "selected", "square eliminated ": box.bg == "eliminated"}'>
+            <div 
+              class='square' 
+              @click="router(idX, idY, box)" 
+              :class='{"square selected ": box.bg == "selected", "square eliminated ": box.bg == "eliminated"}'>
               {{box.val}}
             </div>
           </td>
         </tr>
       </table>
+    </div>
   <button @click='nextRound()'>Next</button>
+  <button @click='reset()'>New</button>
+  <button>Undo</button>
+  <button>Redo</button>
+
   </div>
 </template>
 
 <script>
+
+const STATE_KEY = "state"
+const initialState = [1,2,3,4,5,6,7,8,9,1,1,1,2,1,3,1,4,1,5,1,6,1,7,1,8,1,9].map(num => Object({val: num, bg: ""}))
+
+function copyGameState(state){
+  return JSON.parse(JSON.stringify(state))
+}
+
+function getInitialState(){
+  return copyGameState(initialState)
+}
+
+function saveState(state){
+  window.localStorage.setItem(STATE_KEY, JSON.stringify(state))
+}
+
+function loadState(){
+  return JSON.parse(window.localStorage.getItem(STATE_KEY))
+}
+
+function restoreOrInit(){
+  let state = loadState()
+  if (state == undefined){
+    return getInitialState()
+  }else{
+    return state
+  }
+}
+
 export default {
   name: 'app',
   data () {
     return {
           selection1: null,
           selection2: null,
-          elements: [1,2,3,4,5,6,7,8,9,1,1,1,2,1,3,1,4,1,5,1,6,1,7,1,8,1,9].map(num => Object({val: num, bg: ""}))
+          elements: restoreOrInit()
     }
   },
 
@@ -38,6 +76,11 @@ export default {
   },
   
   methods : {
+      reset(){
+        this.elements = copyGameState(initialState)
+        saveState(this.elements)
+      },
+
       router(idX, idY, box){
         if (box.bg != "eliminated"){
           box.bg = "selected"
@@ -48,13 +91,11 @@ export default {
           else {
             if (this.selection2 == undefined){
               this.selection2 = {box: box, x: idX, y: idY}
-              // TODO
-              console.log("selection 1 ... ");
-              console.log("selection 2 ... ");
 
+              let isSelectionSame = JSON.stringify(this.selection1) == JSON.stringify(this.selection2)
               // reset selection
               setTimeout(() => {
-                if (this.match()) {
+                if (this.match() && !isSelectionSame) {
                   console.log(this.selection1);
                   console.log(this.selection2);
                   
@@ -64,6 +105,8 @@ export default {
                   this.selection1 = undefined
                   this.selection2 = undefined
                   this.removeCompletedLines()
+
+                  saveState(this.elements)
                 }else{
                   this.resetSelection()
                 }
@@ -186,11 +229,13 @@ export default {
 </script>
 
 <style>
+  
   .center {
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%,-50%);
   }
+  
 
   body {
     font-family: 'Oswald', sans-serif;
@@ -247,8 +292,9 @@ export default {
   }
 
   .titleBlock.h1 {
-      font-size: 100px;
+      font-size: 80px;
       width: 100%;
   }
+
 
 </style>
