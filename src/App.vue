@@ -1,10 +1,10 @@
 <template>
   <div id="app">
     <table id='board'>
-        <tr v-for="row in board" :key="row.id">
-          <td v-for='box in row' :key="box.id">
-            <div class='square' @click="router(box)" :class='{"square active": box.bg}'>
-              {{box}}
+        <tr v-for="(row, idY) in board" :key="idY">
+          <td v-for='(box, idX) in row' :key="idX">
+            <div class='square' @click="router(idX, idY, box)" :class='{"square selected ": box.bg == "selected", "square eliminated ": box.bg == "eliminated"}'>
+              {{box.val}}
             </div>
           </td>
         </tr>
@@ -20,35 +20,170 @@ export default {
     return {
           selection1: null,
           selection2: null,
-          board: [
-            [1,2,3,4,5,6,7,8,9],
-            [1,1,1,2,1,3,1,4,1],
-            [5,1,6,1,7,1,8,1,9]
-          ]
+          elements: [1,2,3,4,5,6,7,8,9,1,1,1,2,1,3,1,4,1,5,1,6,1,7,1,8,1,9].map(num => Object({val: num, bg: ""}))
     }
   },
-  methods : {
-    router(box){
-      alert(box)
-    },
 
-    nextRound(){
-      let tmp = this.board.flat();
-      tmp = tmp.concat(tmp)
-      var i,j,temparray,chunk = 9;
-      let total = []
-      for (i=0,j=tmp.length; i<j; i+=chunk) {
-          temparray = tmp.slice(i,i+chunk);
-          total.push(temparray)
-      }
-      this.board = total
+  created () {
+    // after vue compontent is created
+  },
+
+  computed: {
+    board: function() {
+      return this.chunkArray(this.elements)
     }
-  }
+  },
+  
+  methods : {
+      router(idX, idY, box){
+        if (box.bg != "eliminated"){
+          box.bg = "selected"
+
+          if (this.selection1 == undefined){
+            this.selection1 = {box: box, x: idX, y: idY}
+          }
+          else {
+            if (this.selection2 == undefined){
+              this.selection2 = {box: box, x: idX, y: idY}
+              // TODO
+              console.log("selection 1 ... ");
+              console.log("selection 2 ... ");
+
+              // reset selection
+              setTimeout(() => {
+                if (this.match()) {
+                  console.log(this.selection1);
+                  console.log(this.selection2);
+                  
+                  console.log("selections are matchinng")
+                  this.selection1.box.bg = "eliminated"
+                  this.selection2.box.bg = "eliminated"
+                  this.selection1 = undefined
+                  this.selection2 = undefined
+                  this.removeCompletedLines()
+                }else{
+                  this.resetSelection()
+                }
+                }, 300)
+              }
+          }
+        }
+
+      },
+
+      resetSelection(){
+        if (this.selection1){
+          this.selection1.box.bg = ""
+          this.selection1 = undefined
+        }
+
+        if (this.selection2){
+          this.selection2.box.bg = ""
+          this.selection2 = undefined
+        }
+      },
+
+      match(){
+        return this.correctCount() &&  (this.directNeighboursX() || this.directNeighboursY() || this.undirectNeigboursX() || this.undirectNeigboursY())
+      },
+
+      directNeighboursY(){
+        return (
+         (this.selection1.x == this.selection2.x) && (Math.abs(this.selection1.y - this.selection2.y) == 1)
+        )
+      },
+
+      directNeighboursX(){
+        return (
+         (this.selection1.y == this.selection2.y) && (Math.abs(this.selection1.x - this.selection2.x) == 1)
+        )
+      },
+
+      undirectNeigboursX(){
+        let elem1Idx = (this.selection1.y * 9) + this.selection1.x
+        let elem2Idx = (this.selection2.y * 9) + this.selection2.x
+        let aheadIdx = Math.min(elem1Idx, elem2Idx)
+        let inBetweenCount = Math.abs(elem1Idx - elem2Idx) - 1
+        if (inBetweenCount == 0){
+          return true
+        }else{
+          let inBetweenSart = aheadIdx + 1
+          let inBetweenEnd = inBetweenSart + inBetweenCount
+          let elementsInBetween = this.elements.slice(inBetweenSart, inBetweenEnd)
+          if (elementsInBetween.every(item => item.bg == "eliminated")){
+            return true
+          }
+        }
+
+        return false
+      },
+
+      undirectNeigboursY(){
+        if (this.selection1.x == this.selection2.x){
+          let elem1Idx = this.selection1.y
+          let elem2Idx = this.selection2.y
+          let aheadIdx = Math.min(elem1Idx, elem2Idx)
+          let inBetweenCount = Math.abs(elem1Idx - elem2Idx) - 1
+          if (inBetweenCount == 0){
+            return true
+          }else{
+            let tmp = []
+            for (var i=aheadIdx+1; i< aheadIdx+1+inBetweenCount; i++) {
+              tmp.push(this.elements[(i*9)+this.selection1.x])
+              if (tmp.every(item => item.bg == "eliminated")){
+                return true
+              }
+            }
+          }
+          
+        }
+        return false
+      },
+
+      correctCount(){
+        return (
+          ((this.selection1.box.val + this.selection2.box.val) == 10) ||
+          ((this.selection1.box.val == this.selection2.box.val))
+        )
+      },
+
+      chunkArray(arr){
+        let tmp = arr.flat()
+        var i,j,temparray,chunk = 9
+        let total = []
+        for (i=0,j=tmp.length; i<j; i+=chunk) {
+            temparray = tmp.slice(i,i+chunk)
+            total.push(temparray)
+        }
+        return total
+      },
+
+      nextRound(){
+        this.resetSelection()
+        let newElements = this.elements.filter(item => item.bg != "eliminated").map(item => item.val).map(num => Object({val: num, bg: ""}))
+        this.elements = this.elements.concat(newElements)
+      },
+
+      removeCompletedLines(){
+        var arrayLength = this.board.length
+        for (var i = arrayLength-1; i >= 0; i--) {
+          let row = this.board[i]
+          if (row.every(item => item.bg == "eliminated")){
+            this.removeLine(i)
+          }
+        }
+      },
+
+      removeLine(lineNum){
+        this.elements.splice(lineNum*9, 9)
+      },
+  },
+  
 }
 </script>
 
-<style lang="scss">
-body {
+<style>
+  body {
     font-family: 'Oswald', sans-serif;
     font-size: 48px;
   }
@@ -88,5 +223,13 @@ body {
 
   .square:active {
       background: #00B16A;
+  }
+
+  .selected {
+      background: #FFB16A;
+  }  
+
+  .eliminated {
+      background: #000000;
   }
 </style>
