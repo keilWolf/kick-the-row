@@ -12,7 +12,7 @@
 - [ ] helping lines to better see which are the numbers to compare
 - [ ] intro page (how to play the game)
 - [ ] impressum/contact
-- [ ] bug: if too much lines, not completely scrollable
+- [x] bug: if too much lines, not completely scrollable
 - [ ] if row complete -> fade out slowly
 - [ ] highscore (1, 2, 3)
 - [ ] undo

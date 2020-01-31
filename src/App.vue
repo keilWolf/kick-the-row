@@ -1,8 +1,11 @@
 <template>
-  <div id="app" class="center">
+  <div id="app">
     <div class='titleBlock'>
       <h1>kick<span>the</span>row</h1>
     </div>
+    <button class='centeredGameStateButton' @click='reset()'>
+      <img src="https://img.icons8.com/ios/50/000000/recurring-appointment.png">
+    </button>
     <div class='playground'>
     <table id='board' align="center">
         <tr v-for="(row, idY) in board" :key="idY">
@@ -17,10 +20,12 @@
         </tr>
       </table>
     </div>
-  <button @click='nextRound()'>Next</button>
-  <button @click='reset()'>New</button>
-  <button>Undo</button>
-  <button>Redo</button>
+    <button class='centeredGameStateButton' @click='nextRound()'>
+      <img src="https://img.icons8.com/ios/50/000000/low-priority.png"/>
+    </button>
+  
+  <button style="display: none">Undo</button> <!-- TODO -->
+  <button style="display: none">Redo</button> <!-- TODO -->
 
   </div>
 </template>
@@ -234,6 +239,12 @@ export default {
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%,-50%);
+  }
+
+  .centeredGameStateButton {
+    margin: auto; 
+    display: block;
+    background: transparent;
   }
   
 
