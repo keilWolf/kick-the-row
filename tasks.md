@@ -9,28 +9,27 @@
 - [x] load -- local storage
 - [x] layout v2
 - [x] bug: if too much lines, not completely scrollable
-- [ ] hints (badge display how many moves are currently possible)
+- [x] license
+- [ ] hint (next possible move)
 - [ ] counter of open elements (round circle with number in it)
-- [ ] intro page (how to play the game)
-- [ ] impressum/contact
 - [ ] if row complete -> fade out slowly
 - [ ] highscore (1, 2, 3)
 - [ ] undo 
-- [ ] redo 
-- [ ] license
 - [ ] user can change size
 - [ ] highlight lines to better see which are the numbers to compare
 - [ ] count and show total numbers
-- [ ] git hub repo public
 - [ ] testing
+- [ ] if last row has not full elements but all are deleted, the row will be kicked. this should not happen
+- [ ] two playing modes
+- [ ] intro page (how to play the game)
+- [ ] impressum/contact
+- [ ] git hub repo public
 
 # Play Modes or optional features
 
-## Easy
+## Easy or Optional Stuff
 
-- Highlights
-
-## Normal
+- Highlights and Hints
 
 ## Hard
 
