@@ -245,6 +245,7 @@ export default {
     margin: auto; 
     display: block;
     background: transparent;
+    border: none;
   }
   
 
@@ -293,6 +294,7 @@ export default {
 
   .eliminated {
       background: #000000;
+    color: black;
   }
 
   .titleBlock {
