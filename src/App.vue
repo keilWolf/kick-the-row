@@ -219,7 +219,7 @@ export default {
         var arrayLength = this.board.length
         for (var i = arrayLength-1; i >= 0; i--) {
           let row = this.board[i]
-          if (row.every(item => item.bg == "eliminated")){
+          if (row.length == 9 && row.every(item => item.bg == "eliminated")){
             this.removeLine(i)
           }
         }
