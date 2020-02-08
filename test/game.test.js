@@ -1,14 +1,7 @@
-import Game from './game'
-/*
+import Game from '../src/game'
 
 describe("Game", () => {
   it("should be instanceable", () => {
     expect(new Game()).toBeInstanceOf(Game);
-  });
-});
-*/
-describe("Game", () => {
-  it("should be instanceable", () => {
-    expect(1+2).toBe(3);
   });
 });
