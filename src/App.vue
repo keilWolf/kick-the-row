@@ -32,6 +32,13 @@
 
 <script>
 
+import Game from './game'
+
+const gg = new Game("test")
+
+console.log(gg.getInitial());
+
+
 const STATE_KEY = "state"
 const initialState = [1,2,3,4,5,6,7,8,9,1,1,1,2,1,3,1,4,1,5,1,6,1,7,1,8,1,9].map(num => Object({val: num, bg: ""}))
 
