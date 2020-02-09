@@ -8,12 +8,12 @@
     </button>
     <div class='playground'>
     <table id='board' align="center">
-        <tr v-for="(row, idY) in board" :key="idY">
+        <tr v-for="(row, idY) in game.elements" :key="idY">
           <td v-for='(box, idX) in row' :key="idX">
             <div 
               class='square' 
-              @click="router(idX, idY, box)" 
-              :class='{"square selected ": box.bg == "selected", "square eliminated ": box.bg == "eliminated"}'>
+              @click="router(idX, idY, num)" 
+              :class='{"square selected ": isSelection(idX, idY), "square eliminated ": game.isEliminated(idX, idY)}'>
               {{box.val}}
             </div>
           </td>
@@ -34,46 +34,12 @@
 
 import Game from './game'
 
-const gg = new Game("test")
-
-console.log(gg.getInitial());
-
-
-const STATE_KEY = "state"
-const initialState = [1,2,3,4,5,6,7,8,9,1,1,1,2,1,3,1,4,1,5,1,6,1,7,1,8,1,9].map(num => Object({val: num, bg: ""}))
-
-function copyGameState(state){
-  return JSON.parse(JSON.stringify(state))
-}
-
-function getInitialState(){
-  return copyGameState(initialState)
-}
-
-function saveState(state){
-  window.localStorage.setItem(STATE_KEY, JSON.stringify(state))
-}
-
-function loadState(){
-  return JSON.parse(window.localStorage.getItem(STATE_KEY))
-}
-
-function restoreOrInit(){
-  let state = loadState()
-  if (state == undefined){
-    return getInitialState()
-  }else{
-    return state
-  }
-}
 
 export default {
   name: 'app',
   data () {
     return {
-          selection1: null,
-          selection2: null,
-          elements: restoreOrInit()
+          game = new Game("Numberama")
     }
   },
 
@@ -82,18 +48,12 @@ export default {
   },
 
   computed: {
-    board: function() {
-      return this.chunkArray(this.elements)
-    }
+    // will be done when data changes
   },
   
   methods : {
-      reset(){
-        this.elements = copyGameState(initialState)
-        saveState(this.elements)
-      },
 
-      router(idX, idY, box){
+      router(idX, idY){
         if (box.bg != "eliminated"){
           box.bg = "selected"
 
@@ -129,6 +89,10 @@ export default {
 
       },
 
+      isSelection(x, y){
+        return (this.selection1.matches(x, y) || this.selection2.matches(x, y))
+      },
+
       resetSelection(){
         if (this.selection1){
           this.selection1.box.bg = ""
@@ -141,100 +105,12 @@ export default {
         }
       },
 
-      match(){
-        return this.correctCount() &&  (this.directNeighboursX() || this.directNeighboursY() || this.undirectNeigboursX() || this.undirectNeigboursY())
-      },
-
-      directNeighboursY(){
-        return (
-         (this.selection1.x == this.selection2.x) && (Math.abs(this.selection1.y - this.selection2.y) == 1)
-        )
-      },
-
-      directNeighboursX(){
-        return (
-         (this.selection1.y == this.selection2.y) && (Math.abs(this.selection1.x - this.selection2.x) == 1)
-        )
-      },
-
-      undirectNeigboursX(){
-        let elem1Idx = (this.selection1.y * 9) + this.selection1.x
-        let elem2Idx = (this.selection2.y * 9) + this.selection2.x
-        let aheadIdx = Math.min(elem1Idx, elem2Idx)
-        let inBetweenCount = Math.abs(elem1Idx - elem2Idx) - 1
-        if (inBetweenCount == 0){
-          return true
-        }else{
-          let inBetweenSart = aheadIdx + 1
-          let inBetweenEnd = inBetweenSart + inBetweenCount
-          let elementsInBetween = this.elements.slice(inBetweenSart, inBetweenEnd)
-          if (elementsInBetween.every(item => item.bg == "eliminated")){
-            return true
-          }
-        }
-
-        return false
-      },
-
-      undirectNeigboursY(){
-        if (this.selection1.x == this.selection2.x){
-          let elem1Idx = this.selection1.y
-          let elem2Idx = this.selection2.y
-          let aheadIdx = Math.min(elem1Idx, elem2Idx)
-          let inBetweenCount = Math.abs(elem1Idx - elem2Idx) - 1
-          if (inBetweenCount == 0){
-            return true
-          }else{
-            let tmp = []
-            for (var i=aheadIdx+1; i< aheadIdx+1+inBetweenCount; i++) {
-              tmp.push(this.elements[(i*9)+this.selection1.x])
-              if (tmp.every(item => item.bg == "eliminated")){
-                return true
-              }
-            }
-          }
-          
-        }
-        return false
-      },
-
-      correctCount(){
-        return (
-          ((this.selection1.box.val + this.selection2.box.val) == 10) ||
-          ((this.selection1.box.val == this.selection2.box.val))
-        )
-      },
-
-      chunkArray(arr){
-        let tmp = arr.flat()
-        var i,j,temparray,chunk = 9
-        let total = []
-        for (i=0,j=tmp.length; i<j; i+=chunk) {
-            temparray = tmp.slice(i,i+chunk)
-            total.push(temparray)
-        }
-        return total
-      },
-
       nextRound(){
         this.resetSelection()
-        let newElements = this.elements.filter(item => item.bg != "eliminated").map(item => item.val).map(num => Object({val: num, bg: ""}))
-        this.elements = this.elements.concat(newElements)
+        //game.nextRound()
       },
 
-      removeCompletedLines(){
-        var arrayLength = this.board.length
-        for (var i = arrayLength-1; i >= 0; i--) {
-          let row = this.board[i]
-          if (row.length == 9 && row.every(item => item.bg == "eliminated")){
-            this.removeLine(i)
-          }
-        }
-      },
 
-      removeLine(lineNum){
-        this.elements.splice(lineNum*9, 9)
-      },
   },
   
 }
