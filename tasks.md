@@ -18,8 +18,8 @@
 - [ ] user can change size
 - [ ] highlight lines to better see which are the numbers to compare
 - [ ] count and show total numbers
-- [ ] testing
-- [ ] if last row has not full elements but all are deleted, the row will be kicked. this should not happen
+- [x] testing
+- [x] if last row has not full elements but all are deleted, the row will be kicked. this should not happen
 - [ ] two playing modes
 - [ ] intro page (how to play the game)
 - [ ] impressum/contact

@@ -1,33 +1,53 @@
 const COLS = 9
-const ELIMINATED = 0
 const LS_STATE_KEY = "state"
 
-const State = {
-    NONE : "none",
-    ELIMINATED : "eliminated",
-    SELECTED : "selected"
+export class Selection {
+
+    constructor(element, neighbours) {
+        this.element = element
+        this.neighbours = neighbours
+    }
+
+    matches(otherSelection){
+        return (this.matchCount(otherSelection) && this.neighbours.includes(otherSelection.element))
+    }
+
+    matchCount(otherSelection) {
+        return (
+            ((this.element.val + otherSelection.element.val) == 10) ||
+            ((this.element.val == otherSelection.element.val))
+        )
+    }
+
+}
+ 
+
+export class Element {
+
+    constructor(val) {
+        this.val = val
+        this.eliminated = false
+    }
+
 }
 
-class Selection {
-
-  constructor(x, y, val){
-    this.x = x
-    this.y = y
-    this.val = val
-  }
-
-}
-
-export default class Game {
+export class Game {
 
     constructor() {
         this.elements = this.getInitial()
-        this.selection1 = null
-        this.selection2 = null
+        this.selection1 = undefined
+        this.selection2 = undefined
     }
 
     getInitial(){
-        return this.arr2matrix([1,2,3,4,5,6,7,8,9, 1,1,1,2,1,3,1,4,1, 5,1,6,1,7,1,8,1,9])
+        let base = [1,2,3,4,5,6,7,8,9, 1,1,1,2,1,3,1,4,1, 5,1,6,1,7,1,8,1,9]
+        let matrix = this.arr2matrix(base)
+        matrix.forEach((row, row_id) => {
+            row.forEach( (elem, col_id) => {
+                matrix[row_id][col_id] = new Element(elem)
+            })
+        })
+        return matrix
     }
 
     arr2matrix(arr){
@@ -41,6 +61,10 @@ export default class Game {
         return total
     }
 
+    getElement(x, y){
+        return this.elements[y][x]
+    }
+
     saveGame() {
         window.localStorage.setItem(LS_STATE_KEY, JSON.stringify(this.elements))
     }
@@ -48,10 +72,9 @@ export default class Game {
     loadState() {
         let state = JSON.parse(window.localStorage.getItem(LS_STATE_KEY))
         if (state != undefined) {
-            console.log("Saved game loaded")
-            this.elements = state
+            let arr = state.flat().map(json => Object.assign(new Element, json))
+            this.elements = this.arr2matrix(arr)
         }else{
-            console.log("No state available. Set to initial")
             this.elements = this.getInitial()
         }
     }
@@ -64,20 +87,27 @@ export default class Game {
     nextRound() {
         let toConcatElements = this.elements
             .flat()
-            .filter(num => num != ELIMINATED)
+            .filter(elem => !elem.eliminated)
+            .map(elem => new Element(elem.val))
         this.elements = this.arr2matrix(this.elements.flat().concat(toConcatElements))
+        this.resetSelection()
     }
 
-    select() {
-
-    }
-
-    isSelected() {
-
-    }
-
-    isEliminated(x, y) {
-        return this.elements[y][x] == ELIMINATED
+    select(x, y) {
+        let currentElement = this.getElement(x, y)
+        let neighbours = this.getNearestNeigbours(x, y)
+        let selection = new Selection(currentElement, neighbours)
+        if (this.selection1 == undefined){
+            this.selection1 = selection
+        }else{
+            if(this.selection1.element == selection.element){
+                this.resetSelection()
+            }else{
+                if(this.selection2 == undefined){
+                    this.selection2 = selection
+                }
+            }
+        }
     }
 
     numOfTotalElements() {
@@ -85,85 +115,73 @@ export default class Game {
     }
 
     numOfLeftElements() {
-        return this.elements.flat().filter(num => num != ELIMINATED).length
+        return this.elements.flat().filter(elem => !elem.eliminated).length
     }
 
     validate() {
-        this.match()
-        this.removeCompletedLines()
+        if (this.selection1 != undefined && this.selection2 != undefined){
+            if (this.selection1.matches(this.selection2)){
+                this.selection1.element.eliminated = true
+                this.selection2.element.eliminated = true
+            }
+            this.resetSelection()
+            this.removeCompletedLines()
+        }
+        this.saveGame()
     }
 
     removeCompletedLines(){
         let removeCandidates = []
-        this.elements.forEach(row => {
-            if (row.length == COLS && row.every(num => num == ELIMINATED)){
-                removeCandidates.push(row)
+        this.elements.forEach((row, idx) => {
+            if (row.length == COLS && row.every(elem => elem.eliminated)){
+                removeCandidates.push(idx)
             }
         })
-        removeCandidates.forEach(cand => this.elements.pop(cand))
+        removeCandidates.reverse().forEach(rowId => this.elements.splice(rowId, 1))
     }
 
-    match(){
-        return this.correctCount() &&  (this.directNeighboursX() || this.directNeighboursY() || this.undirectNeigboursX() || this.undirectNeigboursY())
+    getNearestNeigbours(x, y){
+        let xNeigbours = this.findNeigboursInX(x, y)
+        let yNeigbours = this.findNeigboursInY(x, y)
+        
+        return Array.from(new Set(xNeigbours.concat(yNeigbours).filter(elem => elem != undefined)))
+    }
+    
+    findNeigboursInX(x, y){
+        let globalX = x + y*COLS
+        let tmpFlat = this.elements.flat()
+        return this.findNeigboursInArr(tmpFlat, globalX)
     }
 
-    directNeighboursY() {
-        return (
-            (this.selection1.x == this.selection2.x) && (Math.abs(this.selection1.y - this.selection2.y) == 1)
-        )
+    findNeigboursInY(x, y){
+        let col = this.elements.map(row => row[x]).filter(elem => elem != undefined)
+        return this.findNeigboursInArr(col, y)
     }
 
-    directNeighboursX() {
-        return (
-            (this.selection1.y == this.selection2.y) && (Math.abs(this.selection1.x - this.selection2.x) == 1)
-        )
+    findNeigboursInArr(arr, currentPos){
+        let before = arr.splice(0, currentPos)
+        let after = arr.splice(1, arr.length)
+        let xBefore = before.reverse().find(elem => !elem.eliminated)
+        let xAfter = after.find(elem => !elem.eliminated)
+        return [xBefore, xAfter]
     }
 
-    undirectNeigboursX() {
-        let elem1Idx = (this.selection1.y * 9) + this.selection1.x
-        let elem2Idx = (this.selection2.y * 9) + this.selection2.x
-        let aheadIdx = Math.min(elem1Idx, elem2Idx)
-        let inBetweenCount = Math.abs(elem1Idx - elem2Idx) - 1
-        if (inBetweenCount == 0) {
+
+    resetSelection(){
+        this.selection1 = undefined
+        this.selection2 = undefined
+    }
+
+    isSelection(x, y){
+        if((this.selection1 != undefined) && (this.selection1.element == this.getElement(x, y))){
             return true
-        } else {
-            let inBetweenSart = aheadIdx + 1
-            let inBetweenEnd = inBetweenSart + inBetweenCount
-            let elementsInBetween = this.elements.slice(inBetweenSart, inBetweenEnd)
-            if (elementsInBetween.every(item => item.bg == "eliminated")) {
-                return true
-            }
         }
-
-        return false
-    }
-
-    undirectNeigboursY() {
-        if (this.selection1.x == this.selection2.x) {
-            let elem1Idx = this.selection1.y
-            let elem2Idx = this.selection2.y
-            let aheadIdx = Math.min(elem1Idx, elem2Idx)
-            let inBetweenCount = Math.abs(elem1Idx - elem2Idx) - 1
-            if (inBetweenCount == 0) {
-                return true
-            } else {
-                let tmp = []
-                for (var i = aheadIdx + 1; i < aheadIdx + 1 + inBetweenCount; i++) {
-                    tmp.push(this.elements[(i * 9) + this.selection1.x])
-                    if (tmp.every(item => item.bg == "eliminated")) {
-                        return true
-                    }
-                }
-            }
-
+        if((this.selection2 != undefined) && (this.selection2.element == this.getElement(x, y))){
+            return true
         }
         return false
     }
 
-    correctCount() {
-        return (
-            ((this.selection1.box.val + this.selection2.box.val) == 10) ||
-            ((this.selection1.box.val == this.selection2.box.val))
-        )
-    }
 }
+
+export default {Game, Element, Selection}

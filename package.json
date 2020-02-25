@@ -2,7 +2,7 @@
   "name": "kick-the-row",
   "description": "A Vue.js project",
   "version": "1.0.0",
-  "author": "keil <wolfram.keil@ivi.fraunhofer.de>",
+  "author": "keil <wolframkeil@gmx.net>",
   "license": "MIT",
   "private": true,
   "scripts": {

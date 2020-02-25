@@ -9,12 +9,15 @@
     <div class='playground'>
     <table id='board' align="center">
         <tr v-for="(row, idY) in game.elements" :key="idY">
-          <td v-for='(box, idX) in row' :key="idX">
+          <td v-for='(element, idX) in row' :key="idX">
             <div 
               class='square' 
-              @click="router(idX, idY, num)" 
-              :class='{"square selected ": isSelection(idX, idY), "square eliminated ": game.isEliminated(idX, idY)}'>
-              {{box.val}}
+              @click="router(idX, idY)" 
+              :class='{
+                "square selected ": isSelection(idX, idY), 
+                "square eliminated ": element.eliminated
+                }'>
+              {{element.val}}
             </div>
           </td>
         </tr>
@@ -32,14 +35,16 @@
 
 <script>
 
-import Game from './game'
+import {Game} from './game'
 
+let g = new Game()
+g.loadState()
 
 export default {
   name: 'app',
   data () {
     return {
-          game = new Game("Numberama")
+      game : g
     }
   },
 
@@ -54,62 +59,25 @@ export default {
   methods : {
 
       router(idX, idY){
-        if (box.bg != "eliminated"){
-          box.bg = "selected"
+        this.game.select(idX, idY)
+        setTimeout(() => {
+          this.game.validate()
+          }, 300)
+        },
 
-          if (this.selection1 == undefined){
-            this.selection1 = {box: box, x: idX, y: idY}
-          }
-          else {
-            if (this.selection2 == undefined){
-              this.selection2 = {box: box, x: idX, y: idY}
+      nextRound(){
+        this.game.nextRound()
+        this.game.saveGame()
+      },
 
-              let isSelectionSame = JSON.stringify(this.selection1) == JSON.stringify(this.selection2)
-              // reset selection
-              setTimeout(() => {
-                if (this.match() && !isSelectionSame) {
-                  console.log(this.selection1);
-                  console.log(this.selection2);
-                  
-                  console.log("selections are matchinng")
-                  this.selection1.box.bg = "eliminated"
-                  this.selection2.box.bg = "eliminated"
-                  this.selection1 = undefined
-                  this.selection2 = undefined
-                  this.removeCompletedLines()
-
-                  saveState(this.elements)
-                }else{
-                  this.resetSelection()
-                }
-                }, 300)
-              }
-          }
-        }
-
+      reset(){
+        this.game = new Game()
+        this.game.saveGame()
       },
 
       isSelection(x, y){
-        return (this.selection1.matches(x, y) || this.selection2.matches(x, y))
-      },
-
-      resetSelection(){
-        if (this.selection1){
-          this.selection1.box.bg = ""
-          this.selection1 = undefined
-        }
-
-        if (this.selection2){
-          this.selection2.box.bg = ""
-          this.selection2 = undefined
-        }
-      },
-
-      nextRound(){
-        this.resetSelection()
-        //game.nextRound()
-      },
-
+        return this.game.isSelection(x, y) 
+      }
 
   },
   
