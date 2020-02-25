@@ -2,6 +2,7 @@
   <div id="app">
     <div class='titleBlock'>
       <h1>kick<span>the</span>row</h1>
+      <p>{{getLeft()}}/{{getTotal()}}</p>
     </div>
     <button class='centeredGameStateButton' @click='reset()'>
       <img src="https://img.icons8.com/ios/50/000000/recurring-appointment.png">
@@ -77,6 +78,14 @@ export default {
 
       isSelection(x, y){
         return this.game.isSelection(x, y) 
+      },
+
+      getTotal(){
+        return this.game.numOfTotalElements()
+      },
+
+      getLeft(){
+        return this.game.numOfLeftElements()
       }
 
   },

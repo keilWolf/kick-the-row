@@ -10,20 +10,23 @@
 - [x] layout v2
 - [x] bug: if too much lines, not completely scrollable
 - [x] license
-- [ ] hint (next possible move)
-- [ ] counter of open elements (round circle with number in it)
-- [ ] if row complete -> fade out slowly
-- [ ] highscore (1, 2, 3)
-- [ ] undo 
-- [ ] user can change size
-- [ ] count and show total numbers
 - [x] testing
 - [x] if last row has not full elements but all are deleted, the row will be kicked. this should not happen
+- [x] text should not be highlightable
+- [x] counter of open elements (round circle with number in it)
+- [ ] hint (next possible move)
+- [ ] undo 
+- [ ] count and show total numbers
+- [ ] impressum/contact/copyright
+- [ ] git hub repo public
+
+# Optionals
+
+- [ ] if row complete -> fade out slowly
+- [ ] highscore (1, 2, 3)
+- [ ] user can change size
 - [ ] two playing modes
 - [ ] intro page (how to play the game)
-- [ ] impressum/contact
-- [ ] git hub repo public
-- [x] text should not be highlightable
 
 # Play Modes or optional features
 
