@@ -16,7 +16,6 @@
 - [ ] highscore (1, 2, 3)
 - [ ] undo 
 - [ ] user can change size
-- [ ] highlight lines to better see which are the numbers to compare
 - [ ] count and show total numbers
 - [x] testing
 - [x] if last row has not full elements but all are deleted, the row will be kicked. this should not happen
@@ -24,6 +23,7 @@
 - [ ] intro page (how to play the game)
 - [ ] impressum/contact
 - [ ] git hub repo public
+- [x] text should not be highlightable
 
 # Play Modes or optional features
 
