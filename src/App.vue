@@ -2,8 +2,9 @@
   <div id="app">
     <div class='titleBlock'>
       <h1>kick<span>the</span>row</h1>
-      <p>{{getLeft()}}/{{getTotal()}}</p>
-      [ 
+    </div>
+    <div class="infobox" align="center">
+      [
       <span v-for="(elem, id) in getOpenElements()" 
         :key="id" 
         :class='{
@@ -12,6 +13,7 @@
           }'>
         {{elem.val}}
       </span>]
+      {{getLeft()}}/{{getTotal()}}
     </div>
     <button class='centeredGameStateButton' @click='reset()'>
       <img src="https://img.icons8.com/ios/50/000000/recurring-appointment.png">
@@ -33,16 +35,15 @@
         </tr>
       </table>
     </div>
-    <button class='centeredGameStateButton' @click='nextRound()'>
+    <button 
+      class='centeredGameStateButton' 
+      @click='nextRound()'
+      :class='{"hint": hintAvailable()}'>
       <img src="https://img.icons8.com/ios/50/000000/low-priority.png"/>
     </button>
   
   <button style="display: none">Undo</button> <!-- TODO -->
   <button style="display: none">Redo</button> <!-- TODO -->
-  <v-footer>
-      <v-spacer></v-spacer>
-      <div class="footer">&copy; {{ new Date().getFullYear() }} Wolle</div>
-    </v-footer>
   </div>
 </template>
 
@@ -112,6 +113,11 @@ export default {
         } 
         
         return entries
+      },
+
+      hintAvailable(){
+        let np = this.game.nextPossibleMove()
+        return np != undefined
       }
 
   },
@@ -219,6 +225,14 @@ export default {
   .footer {
     margin-top: 50px;
     color: white;
+  }
+
+  .hint {
+    background: rgba(252, 135, 135, 0.452);
+  }
+
+  .infobox {
+    font-size: 20px
   }
 
 </style>

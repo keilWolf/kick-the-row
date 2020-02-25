@@ -309,3 +309,42 @@ describe("Open Numbers", () => {
   })
 
 })
+
+describe("hinting", () => {
+
+  test("should have possible moves", () => {
+    let game = new Game()
+    game.select(0, 0)
+    let pn = game.selection1.getPossibleNeighbour()
+    expect(pn).toBeDefined()
+  })
+
+  test("should no have possible moves", () => {
+    let game = new Game()
+    game.select(5, 1)
+    let pn = game.selection1.getPossibleNeighbour()
+    expect(pn).toBeUndefined()
+  })
+
+  test("should have possible moves", () => {
+    let game = new Game()
+    let pn = game.nextPossibleMove()
+    expect(pn).toBeDefined()
+  })
+
+  test("should have no possible moves left", () => {
+    let game = new Game()
+    game.getElement(0, 0).eliminated = true
+    game.getElement(0, 1).eliminated = true
+    game.getElement(1, 1).eliminated = true
+    game.getElement(2, 1).eliminated = true
+    game.getElement(3, 1).eliminated = true
+    game.getElement(7, 0).eliminated = true
+    game.getElement(8, 0).eliminated = true
+    game.getElement(8, 1).eliminated = true
+    game.getElement(8, 2).eliminated = true
+    game.getElement(7, 2).eliminated = true
+    let pn = game.nextPossibleMove()
+    expect(pn).toBeUndefined()
+  })
+})

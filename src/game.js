@@ -19,6 +19,15 @@ export class Selection {
         )
     }
 
+    getPossibleNeighbour(){
+        for(let i=0; i<this.neighbours.length; i++){
+            let nb = this.neighbours[i]
+            if(this.matchCount(new Selection(nb, undefined))){
+                return nb
+            }
+        }
+    }
+
 }
  
 
@@ -94,9 +103,7 @@ export class Game {
     }
 
     select(x, y) {
-        let currentElement = this.getElement(x, y)
-        let neighbours = this.getNearestNeigbours(x, y)
-        let selection = new Selection(currentElement, neighbours)
+        let selection = this.getSelection(x, y)
         if (this.selection1 == undefined){
             this.selection1 = selection
         }else{
@@ -108,6 +115,12 @@ export class Game {
                 }
             }
         }
+    }
+
+    getSelection(x, y){
+        let currentElement = this.getElement(x, y)
+        let neighbours = this.getNearestNeigbours(x, y)
+        return new Selection(currentElement, neighbours)
     }
 
     numOfTotalElements() {
@@ -184,6 +197,20 @@ export class Game {
 
     getOpenNumbers(){
         return new Set(this.elements.flat().filter(elem => !elem.eliminated).map(elem => elem.val))
+    }
+
+    nextPossibleMove(){
+        for(let y=0; y<this.elements.length; y++){
+            for(let x=0; x<this.elements[y].length; x++){
+                if(!this.getElement(x, y).eliminated){
+                let selection = this.getSelection(x, y)
+                let option = selection.getPossibleNeighbour() 
+                    if (option != undefined){
+                        return option
+                    }
+                }
+            }
+        }
     }
 
 }

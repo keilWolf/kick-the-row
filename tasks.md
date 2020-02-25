@@ -14,7 +14,7 @@
 - [x] if last row has not full elements but all are deleted, the row will be kicked. this should not happen
 - [x] text should not be highlightable
 - [x] counter of open elements (round circle with number in it)
-- [ ] hint (next possible move)
+- [x] hint (next possible move)
 - [ ] undo 
 - [x] count and show total numbers
 - [x] impressum/contact/copyright
