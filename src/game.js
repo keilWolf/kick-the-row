@@ -182,6 +182,10 @@ export class Game {
         return false
     }
 
+    getOpenNumbers(){
+        return new Set(this.elements.flat().filter(elem => !elem.eliminated).map(elem => elem.val))
+    }
+
 }
 
 export default {Game, Element, Selection}

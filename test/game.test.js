@@ -289,3 +289,23 @@ describe("Move", () => {
   })
 
 })
+
+describe("Open Numbers", () => {
+
+  test("should show all numbers", () => {
+    let game = new Game()
+    let expected = new Set([1,2,3,4,5,6,7,8,9])
+    expect(game.getOpenNumbers().size).toBe(9)
+    expect(game.getOpenNumbers()).toMatchObject(expected)
+  })
+
+  test("should show all except of number 2", () => {
+    let game = new Game()
+    game.getElement(1, 0).eliminated = true
+    game.getElement(3, 1).eliminated = true
+    let expected = new Set([1,3,4,5,6,7,8,9])
+    expect(game.getOpenNumbers().size).toBe(8)
+    expect(game.getOpenNumbers()).toMatchObject(expected)
+  })
+
+})

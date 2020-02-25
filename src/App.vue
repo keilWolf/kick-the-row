@@ -3,6 +3,15 @@
     <div class='titleBlock'>
       <h1>kick<span>the</span>row</h1>
       <p>{{getLeft()}}/{{getTotal()}}</p>
+      [ 
+      <span v-for="(elem, id) in getOpenElements()" 
+        :key="id" 
+        :class='{
+          "masteredNumber": elem.mastered,
+          "nonMasteredNumber": !elem.mastered
+          }'>
+        {{elem.val}}
+      </span>]
     </div>
     <button class='centeredGameStateButton' @click='reset()'>
       <img src="https://img.icons8.com/ios/50/000000/recurring-appointment.png">
@@ -86,6 +95,20 @@ export default {
 
       getLeft(){
         return this.game.numOfLeftElements()
+      },
+
+      getOpenElements(){
+        let entries = []
+        let openNumbers = this.game.getOpenNumbers()
+        for(let i=1; i<10; i++){
+          let mastered = true
+          if (openNumbers.has(i)){
+            mastered = false
+          }
+          entries.push({val: i, mastered: mastered})
+        } 
+        
+        return entries
       }
 
   },
@@ -177,6 +200,17 @@ export default {
         -ms-user-select: none; /* Internet Explorer/Edge */
             user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Opera and Firefox */
-}
+  }
+
+  .masteredNumber {
+    text-decoration: line-through;
+    color: red;
+    margin-right: 10px;
+  }
+
+  .nonMasteredNumber {
+    color: #00B16A;
+    margin-right: 10px;
+  }
 
 </style>

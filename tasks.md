@@ -16,7 +16,7 @@
 - [x] counter of open elements (round circle with number in it)
 - [ ] hint (next possible move)
 - [ ] undo 
-- [ ] count and show total numbers
+- [x] count and show total numbers
 - [ ] impressum/contact/copyright
 - [ ] git hub repo public
 
