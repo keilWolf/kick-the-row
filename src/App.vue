@@ -39,7 +39,10 @@
   
   <button style="display: none">Undo</button> <!-- TODO -->
   <button style="display: none">Redo</button> <!-- TODO -->
-
+  <v-footer>
+      <v-spacer></v-spacer>
+      <div class="footer">&copy; {{ new Date().getFullYear() }} Wolle</div>
+    </v-footer>
   </div>
 </template>
 
@@ -211,6 +214,11 @@ export default {
   .nonMasteredNumber {
     color: #00B16A;
     margin-right: 10px;
+  }
+
+  .footer {
+    margin-top: 50px;
+    color: white;
   }
 
 </style>

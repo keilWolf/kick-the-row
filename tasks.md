@@ -17,7 +17,7 @@
 - [ ] hint (next possible move)
 - [ ] undo 
 - [x] count and show total numbers
-- [ ] impressum/contact/copyright
+- [x] impressum/contact/copyright
 - [ ] git hub repo public
 
 # Optionals
