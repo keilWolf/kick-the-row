@@ -15,16 +15,15 @@
 - [x] text should not be highlightable
 - [x] counter of open elements (round circle with number in it)
 - [x] hint (next possible move)
-- [ ] undo 
+- [x] undo/redo/history 
 - [x] count and show total numbers
 - [x] impressum/contact/copyright
 - [ ] git hub repo public
+- [x] winning screen
 
 # Optionals
 
-- [ ] if row complete -> fade out slowly
 - [ ] highscore (1, 2, 3)
-- [ ] user can change size
 - [ ] two playing modes
 - [ ] intro page (how to play the game)
 

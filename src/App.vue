@@ -14,36 +14,51 @@
         {{elem.val}}
       </span>]
       {{getLeft()}}/{{getTotal()}}
+      <span class='dot' :class='{ "hide": !hintAvailable() }'></span>
     </div>
     <button class='centeredGameStateButton' @click='reset()'>
       <img src="https://img.icons8.com/ios/50/000000/recurring-appointment.png">
     </button>
     <div class='playground'>
-    <table id='board' align="center">
-        <tr v-for="(row, idY) in game.elements" :key="idY">
-          <td v-for='(element, idX) in row' :key="idX">
-            <div 
-              class='square noselect' 
-              @click="router(idX, idY)" 
-              :class='{
-                "square selected ": isSelection(idX, idY), 
-                "square eliminated ": element.eliminated
-                }'>
-              {{element.val}}
-            </div>
-          </td>
-        </tr>
+      <div v-if=won() class='titleBlock'>
+        <h1>YOU<span>WON</span>!!!</h1>
+      </div>
+      <table v-if=!won() id='board' align="center">
+          <tr v-for="(row, idY) in game.elements" :key="idY">
+            <td v-for='(element, idX) in row' :key="idX">
+              <div 
+                class='square noselect' 
+                @click="router(idX, idY)" 
+                :class='{
+                  "square selected ": isSelection(idX, idY), 
+                  "square eliminated ": element.eliminated
+                  }'>
+                {{element.val}}
+              </div>
+            </td>
+          </tr>
       </table>
     </div>
-    <button 
-      class='centeredGameStateButton' 
-      @click='nextRound()'
-      :class='{"hint": hintAvailable()}'>
-      <img src="https://img.icons8.com/ios/50/000000/low-priority.png"/>
-    </button>
-  
-  <button style="display: none">Undo</button> <!-- TODO -->
-  <button style="display: none">Redo</button> <!-- TODO -->
+    <div class="wrapper">
+      <div>
+        <button 
+          class='btn-row'
+          @click='undo()'>
+          <img src="https://img.icons8.com/ios/50/000000/undo.png">
+        </button>
+        <button 
+          class='btn-row'
+          @click='nextRound()'>
+          <img src="https://img.icons8.com/ios/50/000000/low-priority.png"/>
+        </button>
+        <button 
+          class='btn-row'
+          @click='redo()'>
+          <img src="https://img.icons8.com/ios/50/000000/redo.png">
+        </button>
+      </div> 
+    </div>
+
   </div>
 </template>
 
@@ -118,6 +133,18 @@ export default {
       hintAvailable(){
         let np = this.game.nextPossibleMove()
         return np != undefined
+      },
+
+      undo(){
+       this.game.undo()
+      },
+
+      redo(){
+        this.game.redo()
+      },
+
+      won(){
+        return this.game.numOfLeftElements() == 0
       }
 
   },
@@ -227,12 +254,30 @@ export default {
     color: white;
   }
 
-  .hint {
-    background: rgba(252, 135, 135, 0.452);
-  }
-
   .infobox {
     font-size: 20px
   }
+
+  .btn-row {
+    background: transparent;
+    border: none;
+  }
+
+  .wrapper {
+    text-align: center;
+  }
+
+  .dot {
+    height: 10px;
+    width: 10px;
+    background-color: rgba(255, 68, 68, 0.644);
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .hide {
+    background: transparent
+  }
+
 
 </style>

@@ -43,9 +43,11 @@ export class Element {
 export class Game {
 
     constructor() {
+        this.history = []
         this.elements = this.getInitial()
         this.selection1 = undefined
         this.selection2 = undefined
+        this.currentMove = 0
     }
 
     getInitial(){
@@ -75,22 +77,28 @@ export class Game {
     }
 
     saveGame() {
-        window.localStorage.setItem(LS_STATE_KEY, JSON.stringify(this.elements))
+        this.history = this.history.slice(0, this.currentMove + 1)
+        this.history.push(JSON.stringify(this.elements))
+        window.localStorage.setItem(LS_STATE_KEY, JSON.stringify(this.history))
+        this.currentMove = this.history.length - 1
     }
 
     loadState() {
         let state = JSON.parse(window.localStorage.getItem(LS_STATE_KEY))
+        this.history = []
         if (state != undefined) {
-            let arr = state.flat().map(json => Object.assign(new Element, json))
-            this.elements = this.arr2matrix(arr)
+            let mat = undefined
+            for(let i=0; i<state.length; i++){
+                let arr = JSON.parse(state[i]).flat().map(json => Object.assign(new Element, json))
+                mat = this.arr2matrix(arr)
+                this.history.push(JSON.stringify(mat))
+            }
+            this.elements = mat
         }else{
             this.elements = this.getInitial()
+            this.history.push(JSON.stringify(this.elements))
         }
-    }
-
-    reset() {
-        this.elements = this.getInitial()
-        saveState()
+        this.currentMove = this.history.length - 1
     }
 
     nextRound() {
@@ -136,11 +144,11 @@ export class Game {
             if (this.selection1.matches(this.selection2)){
                 this.selection1.element.eliminated = true
                 this.selection2.element.eliminated = true
+                this.saveGame()
             }
             this.resetSelection()
             this.removeCompletedLines()
         }
-        this.saveGame()
     }
 
     removeCompletedLines(){
@@ -211,6 +219,28 @@ export class Game {
                 }
             }
         }
+    }
+
+    undo(){
+        let moveID = Math.max(this.currentMove-1, 0)
+        this.currentMove = moveID
+        this.setState(moveID)
+    }
+
+    redo(){
+        if (this.currentMove < this.history.length - 1){
+            this.currentMove++
+            this.setState(this.currentMove)
+        }else{
+            console.log("nothing happend -- latest state");
+        }
+    }
+
+    setState(moveID){
+        let state = JSON.parse(this.history[moveID])
+        let arr = state.flat().map(json => Object.assign(new Element, json))
+        let mat = this.arr2matrix(arr)
+        this.elements = mat
     }
 
 }
